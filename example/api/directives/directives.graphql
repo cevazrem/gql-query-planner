@@ -1,0 +1,21 @@
+"""
+Planner hint: field may be executed through batching.
+The planner treats this as a declarative capability hint, not as knowledge
+about resolver internals.
+"""
+directive @batchable(
+    "Maximum safe batch size for this field"
+    maxBatchSize: Int = 100
+    "Optional semantic batch key description for documentation/debugging"
+    key: String
+) on FIELD_DEFINITION
+
+
+"""
+Planner hint: field result can be cached within a single GraphQL request.
+The planner/executor treat this as a declarative capability hint.
+"""
+directive @cacheable(
+    "Optional semantic cache key description for documentation/debugging"
+    key: String
+) on FIELD_DEFINITION

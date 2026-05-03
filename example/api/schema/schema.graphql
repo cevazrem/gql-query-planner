@@ -1,0 +1,69 @@
+schema {
+  query: Query
+}
+
+type Query {
+  movie(id: ID!): Movie
+  movies(input: MovieListInput!): MoviesPayload
+  studio(id: ID!): Studio
+}
+
+input MovieListInput {
+  limit: Int = 5
+  genre: String
+  minYear: Int
+}
+
+type MoviesPayload {
+  movies: [Movie!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+type Movie {
+  id: ID!
+  title: String!
+  year: Int!
+  genre: String!
+  rating: Float!
+
+  studio: Studio @cacheable(key: "studio_id")
+  actors(limit: Int = 5): [Actor!]! @batchable(maxBatchSize: 50, key: "movie_id")
+  reviews(limit: Int = 3): [Review!]! @batchable(maxBatchSize: 50, key: "movie_id")
+}
+
+type Studio {
+  id: ID!
+  name: String!
+  country: String!
+  foundedYear: Int!
+
+  movies(limit: Int = 10): [Movie!]! @batchable(maxBatchSize: 50, key: "studio_id")
+}
+
+type Actor {
+  id: ID!
+  name: String!
+  bornYear: Int
+
+  movies(limit: Int = 5): [Movie!]! @batchable(maxBatchSize: 50, key: "actor_id")
+}
+
+type Review {
+  id: ID!
+  rating: Int!
+  text: String!
+
+  author: Critic @cacheable(key: "author_id")
+}
+
+type Critic {
+  id: ID!
+  name: String!
+  reputation: Int!
+}
